@@ -17,8 +17,14 @@ app.use(express.json());
 app.use(express.static("public"));
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/custommethods", { useNewUrlParser: true });
-app.get("/api/workouts"),(function (req, res){
-  Workout.find
+app.put("/api/workouts/"),(function (req, res){
+  Workout.create(body)
+  .then(dbTransaction => {
+    res.json(dbTransaction);
+  })
+  .catch(err => {
+    res.status(400).json(err);
+  });
 })
 app.get("/stats", ({ body }, res) => {
   db.Workout.find({})
@@ -30,8 +36,9 @@ app.get("/stats", ({ body }, res) => {
       res.json(err);
     });
 });
-app.post("/exercise", ({ body }, res) => {
-  Workout.create(body)
+app.get("/api/workouts", ({ body }, res) => {
+  db.Workout.find({})
+    .populate("exercises")
     .then(dbWorkout => {
       res.json(dbWorkout);
     })
@@ -39,8 +46,15 @@ app.post("/exercise", ({ body }, res) => {
       res.json(err);
     });
 });
-
-
+app.post("/api/workouts", ({ body }, res) => {
+  Workout.insertMany(body)
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
