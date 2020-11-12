@@ -20,32 +20,33 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workoutdb", { u
 
 // API ROUTES
 app.put("/api/workouts/:id", ({ params }, res) => {
-  const newWorkout =  res.req.body;
- Workout.findByIdAndUpdate(
+  const newWorkout = res.req.body;
+  Workout.findByIdAndUpdate(
     {
       _id: mongoose.Types.ObjectId(params.id)
     },
     {
       $push: {
-        day:  new Date().setDate(new Date().getDate()-1),
-        exercises: [{
-          type: newWorkout.type,
-          name: newWorkout.name,
-          totalDuration: newWorkout.totalDuration,
-          weight: newWorkout.weight,
-          reps: newWorkout.reps,
-          sets: newWorkout.sets,
-          distance: newWorkout.distance
-      }]
-    }
+        exercises:
+          [{
+            type: newWorkout.type,
+            name: newWorkout.name,
+            totalDuration: newWorkout.totalDuration,
+            weight: newWorkout.weight,
+            reps: newWorkout.reps,
+            sets: newWorkout.sets,
+            distance: newWorkout.distance
+          }]
+      }
+
     })
-      .then(dbWorkout => {
-        console.log(dbWorkout, 'werkout')
-        res.json(dbWorkout);
-      })
-      .catch(err => {
-        res.status(400).json(err);
-      });
+    .then(dbWorkout => {
+      // console.log(dbWorkout, 'werkout')
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
 });
 
 app.get("/api/workouts/", ({ body }, res) => {
