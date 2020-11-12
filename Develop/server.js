@@ -26,15 +26,16 @@ app.put("/api/workouts/:id", ({ params }, res) => {
       _id: mongoose.Types.ObjectId(params.id)
     },
     {
-      $push: {exercises:
-        [{
-        type: newWorkout.type,
-        name: newWorkout.name,
-        totalDuration: newWorkout.totalDuration,
-        weight: newWorkout.weight,
-        reps: newWorkout.reps,
-        sets: newWorkout.sets,
-        distance: newWorkout.distance
+      $push: {
+        day:  new Date().setDate(new Date().getDate()-1),
+        exercises: [{
+          type: newWorkout.type,
+          name: newWorkout.name,
+          totalDuration: newWorkout.totalDuration,
+          weight: newWorkout.weight,
+          reps: newWorkout.reps,
+          sets: newWorkout.sets,
+          distance: newWorkout.distance
       }]
     }
     })
@@ -61,7 +62,7 @@ app.post("/api/workouts", ({ body }, res) => {
   db.Workout.create({
     type: body.type,
     name: body.name,
-    duration: body.duration,
+    totalDuration: body.totalDuration,
     weight: body.weight,
     reps: body.reps,
     sets: body.sets,
