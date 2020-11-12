@@ -84,8 +84,7 @@ app.get("/api/workouts/range", ({ body }, res) => {
     .catch(err => {
       res.json(err);
     });
-});
-
+})
 
 // HTML ROUTES
 app.get("/stats", ({ body }, res) => {
