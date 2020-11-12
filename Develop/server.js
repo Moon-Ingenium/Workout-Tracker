@@ -21,21 +21,22 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workoutdb", { u
 // API ROUTES
 app.put("/api/workouts/:id", ({ params }, res) => {
   const newWorkout =  res.req.body;
-  console.log(res.req.body, 'parms are hrr');
-  Workout.findByIdAndUpdate(
+ Workout.findByIdAndUpdate(
     {
       _id: mongoose.Types.ObjectId(params.id)
     },
     {
-      $push: {
+      $push: {exercises:
+        [{
         type: newWorkout.type,
         name: newWorkout.name,
-        duration: newWorkout.duration,
+        totalDuration: newWorkout.duration,
         weight: newWorkout.weight,
         reps: newWorkout.reps,
         sets: newWorkout.sets,
         distance: newWorkout.distance
-      }
+      }]
+    }
     })
       .then(dbWorkout => {
         console.log(dbWorkout, 'werkout')
@@ -56,25 +57,26 @@ app.get("/api/workouts/", ({ body }, res) => {
     });
 });
 
-// app.post("/api/workouts", ({ body }, res) => {
-//   db.Workout.create({
-//     type: body.type,
-//     name: body.name,
-//     duration: body.duration,
-//     weight: body.weight,
-//     reps: body.reps,
-//     sets: body.sets,
-//     distance: body.distance
-//   })
-//     .then(dbWorkout => {
-//       console.log(dbWorkout);
-//       console.log(res);
-//       res.json(dbWorkout);
-//     })
-//     .catch(err => {
-//       res.json(err);
-//     });
-// });
+app.post("/api/workouts", ({ body }, res) => {
+  db.Workout.create({
+    type: body.type,
+    name: body.name,
+    duration: body.duration,
+    weight: body.weight,
+    reps: body.reps,
+    sets: body.sets,
+    distance: body.distance
+  })
+    .then(dbWorkout => {
+      console.log(dbWorkout);
+      console.log(res);
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
+// app.get("/api/workouts/range", ({ body }, res) => {})
 
 // HTML ROUTES
 app.get("/stats", ({ body }, res) => {
