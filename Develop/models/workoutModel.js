@@ -20,7 +20,7 @@ const WorkoutSchema = new Schema({
             },
             weight: {
                 type: Number,
-                required: "Enter weight."
+               
             },
             reps: {
                 type: Number,

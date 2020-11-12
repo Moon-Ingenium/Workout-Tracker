@@ -1,7 +1,7 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-
+var path = require("path");
 const PORT = process.env.PORT || 3000;
 
 let db = require("./models/");
@@ -16,38 +16,38 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/custommethods", { useNewUrlParser: true });
-app.put("/api/workouts/"),(function (req, res){
-  Workout.create(body)
-  .then(dbTransaction => {
-    res.json(dbTransaction);
-  })
-  .catch(err => {
-    res.status(400).json(err);
-  });
-})
-app.get("/stats", ({ body }, res) => {
-  db.Workout.find({})
-    .populate("exercises")
-    .then(dbWorkout => {
-      res.json(dbWorkout);
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workoutdb", { useNewUrlParser: true });
+
+// API ROUTES
+app.put("/api/workouts/:id", ({ params }, res) => {
+  const newWorkout =  res.req.body;
+  console.log(res.req.body, 'parms are hrr');
+  Workout.findByIdAndUpdate(
+    {
+      _id: mongoose.Types.ObjectId(params.id)
+    },
+    {
+      $push: {
+        type: newWorkout.type,
+        name: newWorkout.name,
+        duration: newWorkout.duration,
+        weight: newWorkout.weight,
+        reps: newWorkout.reps,
+        sets: newWorkout.sets,
+        distance: newWorkout.distance
+      }
     })
-    .catch(err => {
-      res.json(err);
-    });
+      .then(dbWorkout => {
+        console.log(dbWorkout, 'werkout')
+        res.json(dbWorkout);
+      })
+      .catch(err => {
+        res.status(400).json(err);
+      });
 });
-app.get("/api/workouts", ({ body }, res) => {
+
+app.get("/api/workouts/", ({ body }, res) => {
   db.Workout.find({})
-    .populate("exercises")
-    .then(dbWorkout => {
-      res.json(dbWorkout);
-    })
-    .catch(err => {
-      res.json(err);
-    });
-});
-app.post("/api/workouts", ({ body }, res) => {
-  Workout.insertMany(body)
     .then(dbWorkout => {
       res.json(dbWorkout);
     })
@@ -56,6 +56,34 @@ app.post("/api/workouts", ({ body }, res) => {
     });
 });
 
+// app.post("/api/workouts", ({ body }, res) => {
+//   db.Workout.create({
+//     type: body.type,
+//     name: body.name,
+//     duration: body.duration,
+//     weight: body.weight,
+//     reps: body.reps,
+//     sets: body.sets,
+//     distance: body.distance
+//   })
+//     .then(dbWorkout => {
+//       console.log(dbWorkout);
+//       console.log(res);
+//       res.json(dbWorkout);
+//     })
+//     .catch(err => {
+//       res.json(err);
+//     });
+// });
+
+// HTML ROUTES
+app.get("/stats", ({ body }, res) => {
+  res.sendFile(path.join(__dirname, "./public/stats.html"));
+
+});
+app.get("/exercise", ({ body }, res) => {
+  res.sendFile(path.join(__dirname, "./public/exercise.html"));
+});
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
 });
