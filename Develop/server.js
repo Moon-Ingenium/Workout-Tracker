@@ -30,7 +30,7 @@ app.put("/api/workouts/:id", ({ params }, res) => {
         [{
         type: newWorkout.type,
         name: newWorkout.name,
-        totalDuration: newWorkout.duration,
+        totalDuration: newWorkout.totalDuration,
         weight: newWorkout.weight,
         reps: newWorkout.reps,
         sets: newWorkout.sets,
@@ -76,7 +76,16 @@ app.post("/api/workouts", ({ body }, res) => {
       res.json(err);
     });
 });
-// app.get("/api/workouts/range", ({ body }, res) => {})
+app.get("/api/workouts/range", ({ body }, res) => {
+  db.Workout.find({})
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
+
 
 // HTML ROUTES
 app.get("/stats", ({ body }, res) => {
